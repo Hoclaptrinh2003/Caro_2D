@@ -8,6 +8,7 @@ public class CheckWin : Singleton<CheckWin>
 
     void Start()
     {
+
         //CheckWin.Instance.boardState = new string[Board.Instance.BoardSize, Board.Instance.BoardSize];
         //CheckWin.Instance.winLength = Board.Instance.BoardSize < 5 ? 3 : 5;
     }
@@ -20,7 +21,21 @@ public class CheckWin : Singleton<CheckWin>
             Board.Instance.indexChange = Board.Instance.indexChange - 1;
             Debug.Log("Player " + (Board.Instance.indexChange % 2 == 0 ? "X" : "O") + " wins!");
             UImanager.Instance.Popup[0].SetActive(true);    
-            isWin = true;   
+            isWin = true;
+            if(Board.Instance.indexChange % 2 == 0)
+            {
+                Board.Instance.UpdatePlayerStats(LoginGame.Instance.UsernameText_X.text, LoginGame.Instance.UsernameText_O.text, true);
+            }
+            else
+            {
+                Board.Instance.UpdatePlayerStats(LoginGame.Instance.UsernameText_O.text, LoginGame.Instance.UsernameText_X.text,true);
+
+            }
+        }
+        else if (CheckTie())
+        {
+            Debug.Log("Hòa");
+            UImanager.Instance.Popup[2].SetActive(true);
         }
     }
 
@@ -103,6 +118,23 @@ public class CheckWin : Singleton<CheckWin>
         }
 
         return false;
+    }
+
+
+
+    private bool CheckTie()
+    {
+        for (int i = 0; i < Board.Instance.BoardSize; i++)
+        {
+            for (int j = 0; j < Board.Instance.BoardSize; j++)
+            {
+                if (string.IsNullOrEmpty(boardState[i, j]))  
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 }

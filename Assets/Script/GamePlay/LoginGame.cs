@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-
+using System.Linq;
 public class LoginGame : Singleton<LoginGame>   
 {
     [SerializeField] private TMP_InputField Player_X_Name;
     [SerializeField] private TMP_InputField Player_O_Name;
     public TextMeshProUGUI UsernameText_X;
     public TextMeshProUGUI UsernameText_O;
-
     public void SetNamePlayer()
     {
+        AudioManager.Instance.BtnClick();
+
         string usernameText_X = Player_X_Name.text.Trim();
         string usernameText_O = Player_O_Name.text.Trim();
 
@@ -36,6 +37,15 @@ public class LoginGame : Singleton<LoginGame>
         }
         Board.Instance.isShowTextColer_X = false;    
         gameObject.SetActive(false);
-
+        UImanager.Instance.Popup[1].SetActive(true);
     }
+
+
+
+
+
+
+
+
+
 }

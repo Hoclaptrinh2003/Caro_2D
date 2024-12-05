@@ -1,6 +1,9 @@
 ﻿using UnityEngine.UI;
 using UnityEngine;
 using Unity.VisualScripting;
+using System.Linq;
+using System.Collections.Generic;
+using System.IO;
 
 public class Board : Singleton<Board>
 {
@@ -14,9 +17,23 @@ public class Board : Singleton<Board>
 
     public int BoardSize;
     public int indexChange;
+    private string filePath = "GameData.json";
 
-    
+    private void Start()
+    {
+        string filePath = Path.Combine(Application.persistentDataPath, "gameData.json");
+        Debug.Log("File path: " + filePath);
 
+        // Kiểm tra nếu tệp tồn tại
+        if (File.Exists(filePath))
+        {
+            Debug.Log("File exists at: " + filePath);
+        }
+        else
+        {
+            Debug.Log("File does not exist.");
+        }
+    }
 
     public void CreateGame()
     {
@@ -102,9 +119,14 @@ public class Board : Singleton<Board>
             GridLayoutGroupBoard.cellSize = new Vector2(100, 100);
 
         }
+        else if(BoardSize > 9 && BoardSize < 15)
+        {
+            GridLayoutGroupBoard.cellSize = new Vector2(70, 70);
+
+        }
         else
         {
-            GridLayoutGroupBoard.cellSize = new Vector2(80, 80);
+            GridLayoutGroupBoard.cellSize = new Vector2(55, 55);
 
         }
     }
@@ -132,6 +154,75 @@ public class Board : Singleton<Board>
 
         }
     }
+
+
+
+
+
+
+
+
+    public void UpdatePlayerStats(string playerName, string opponentName, bool isWin)
+    {
+        GameData gameData = GameData.LoadData();
+
+        Player player = gameData.players.Find(p => p.name == playerName);
+        if (player == null)
+        {
+            player = new Player(playerName, 0, 0);
+            gameData.players.Add(player);
+        }
+
+        if (isWin)
+        {
+            player.wins += 1;
+        }
+        else
+        {
+            player.losses += 1;
+        }
+
+        Player opponent = gameData.players.Find(p => p.name == opponentName);
+        if (opponent == null)
+        {
+            opponent = new Player(opponentName, 0, 0);
+            gameData.players.Add(opponent);
+        }
+
+        if (!isWin)
+        {
+            opponent.wins += 1;
+        }
+        else
+        {
+            opponent.losses += 1;
+        }
+
+        gameData.SaveData();
+
+        var sortedPlayers = gameData.players
+            .Select(p => new
+            {
+                PlayerName = p.name,
+                Points = p.wins - 0.5 * p.losses
+            })
+            .OrderByDescending(p => p.Points)
+            .ToList();
+
+        Debug.Log("Player Rankings:");
+        int rank = 1;
+        foreach (var playerStats in sortedPlayers)
+        {
+            Debug.Log($"Rank {rank}: {playerStats.PlayerName} - Points: {playerStats.Points}");
+            rank++;
+        }
+    }
+
+
+
+
+
+
 
 
 

@@ -38,7 +38,7 @@ public class Cell : MonoBehaviour
             {
                 cellImage.sprite = o_img;
             }
-
+            AudioManager.Instance.BtnCellClick();
 
             CheckWin.Instance.boardState[xIndex, yIndex] = currentPlayer;
 
